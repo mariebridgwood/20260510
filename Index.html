@@ -114,8 +114,8 @@
     const photoDiv = document.createElement("div");
     photoDiv.className = "photo";
     photoDiv.innerHTML = `
-      <img src="images/${filename}" alt="${filename}" data-index="${index}">
-      <a href="images/${filename}" download>Download</a>
+      <img src="Images/${filename}" alt="${filename}" data-index="${index}">
+      <a href="Images/${filename}" download>Download</a>
     `;
     gallery.appendChild(photoDiv);
   });
@@ -189,7 +189,7 @@
   });
 
   function updateLightboxImage() {
-    lightboxImage.src = `images/${imageList[currentImageIndex]}`;
+    lightboxImage.src = `Images/${imageList[currentImageIndex]}`;
   }
 
   function closeLightbox() {
