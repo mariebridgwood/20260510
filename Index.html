@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🦁 U9 Maroon Lions 2026 - Game 2 🏉</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* small inline styles for the audio hint and lightbox layout */
+   // .audio-hint { text-align:center; color:#666; font-size:0.9rem; margin-top:8px; }
+  //  .audio-controls-wrap { text-align:center; margin-bottom:8px; }
+    .lightbox { align-items:center; justify-content:center; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:none; }
+    .lightbox img { max-width:90%; max-height:80%; }
+    .close { position:absolute; top:20px; right:30px; color:#fff; font-size:2rem; cursor:pointer; }
+    .prev, .next { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; color:#fff; font-size:2rem; cursor:pointer; }
+    .prev { left:20px; } .next { right:20px; }
+    .gallery .photo { display:inline-block; margin:8px; }
+    .gallery img { max-width:180px; height:auto; display:block; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+  <h1>🦁 U9 Maroon Lions 2026 - Game 2🏉</h1>
+
+
+  <!-- Audio element: we do NOT use autoplay. We will start on a user click on a photo.
+       It loops and is preloaded. playsinline helps mobile. 
+  <div class="audio-controls-wrap">
+    <audio id="bgAudio" loop preload="auto" playsinline>
+      <source src="audio/Lions.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <button id="toggleAudio" aria-pressed="false">Play audio</button>
+    <div id="audioHint" class="audio-hint">Click a photo to open it and start audio (playback will continue while you view photos).</div>
+  </div>-->
+
+  <div id="gallery" class="gallery"></div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" style="display:none;">
+    <span class="close" title="Close">&times;</span>
+    <img src="" alt="Enlarged photo">
+    <button class="prev" onclick="changeImage(-1)" title="Previous">&#10094;</button>
+    <button class="next" onclick="changeImage(1)" title="Next">&#10095;</button>
+  </div>
+
+<script>
+  const imageList = [
+   "DSC_0430.JPG",
+ "DSC_0438.JPG",
+ "DSC_0440.JPG",
+ "DSC_0446.JPG",
+ "DSC_0449.JPG",
+ "DSC_0450.JPG",
+ "DSC_0454.JPG",
+ "DSC_0458.JPG",
+ "DSC_0459.JPG",
+ "DSC_0460.JPG",
+ "DSC_0467.JPG",
+ "DSC_0471.JPG",
+ "DSC_0473.JPG",
+ "DSC_0475.JPG",
+ "DSC_0480.JPG",
+ "DSC_0481.JPG",
+ "DSC_0483.JPG",
+ "DSC_0484.JPG",
+ "DSC_0493.JPG",
+ "DSC_0494.JPG",
+ "DSC_0496.JPG",
+ "DSC_0498.JPG",
+ "DSC_0502.JPG",
+ "DSC_0503.JPG",
+ "DSC_0506.JPG",
+ "DSC_0511.JPG",
+ "DSC_0512.JPG",
+ "DSC_0516.JPG",
+ "DSC_0528.JPG",
+ "DSC_0529.JPG",
+ "DSC_0532.JPG",
+ "DSC_0535.JPG",
+ "DSC_0536.JPG",
+ "DSC_0537.JPG",
+ "DSC_0552.JPG",
+ "DSC_0554.JPG",
+ "DSC_0555.JPG",
+ "DSC_0556.JPG",
+ "DSC_0562.JPG",
+ "DSC_0566.JPG",
+ "DSC_0570.JPG",
+ "DSC_0573.JPG",
+ "DSC_0574.JPG",
+ "DSC_0577.JPG",
+ "DSC_0578.JPG",
+ "DSC_0579.JPG",
+ "DSC_0593.JPG",
+ "DSC_0594.JPG",
+ "DSC_0599.JPG",
+ "DSC_0600.JPG",
+ "DSC_0601.JPG",
+ "DSC_0611.JPG",
+ "DSC_0614.JPG",
+ "DSC_0616.JPG",
+ "DSC_0621.JPG",
+ "DSC_0622.JPG",
+ "DSC_0625.JPG"
+  ];
+
+  const gallery = document.getElementById("gallery");
+  let currentImageIndex = 0;
+
+  // Build gallery thumbnails
+  imageList.forEach((filename, index) => {
+    const photoDiv = document.createElement("div");
+    photoDiv.className = "photo";
+    photoDiv.innerHTML = `
+      <img src="images/${filename}" alt="${filename}" data-index="${index}">
+      <a href="images/${filename}" download>Download</a>
+    `;
+    gallery.appendChild(photoDiv);
+  });
+
+  const lightbox = document.querySelector(".lightbox");
+  const lightboxImage = document.querySelector(".lightbox img");
+  const closeBtn = document.querySelector(".close");
+
+  /*
+  AUDIO SECTION COMMENTED OUT
+
+  const audio = document.getElementById("bgAudio");
+  const audioHint = document.getElementById("audioHint");
+  const toggleAudioBtn = document.getElementById("toggleAudio");
+
+  toggleAudioBtn.addEventListener("click", () => {
+    if (audio.paused) {
+      audio.play().then(() => {
+        toggleAudioBtn.textContent = "Pause audio";
+        toggleAudioBtn.setAttribute("aria-pressed", "true");
+        audioHint.textContent = "Audio playing — you can continue viewing photos.";
+        audio.controls = true;
+      }).catch(err => {
+        console.warn("Audio play prevented:", err);
+        audio.controls = true;
+        audioHint.textContent = "Playback blocked; press Play in the audio controls.";
+      });
+    } else {
+      audio.pause();
+      toggleAudioBtn.textContent = "Play audio";
+      toggleAudioBtn.setAttribute("aria-pressed", "false");
+      audioHint.textContent = "Audio paused. Click a photo or Play to start again.";
+    }
+  });
+  */
+
+  function openLightbox(event) {
+    if (event.target.tagName === "A") return;
+
+    event.preventDefault();
+    currentImageIndex = Number(event.target.dataset.index);
+    updateLightboxImage();
+    lightbox.style.display = "flex";
+
+    /*
+    AUDIO AUTO-PLAY ON PHOTO CLICK COMMENTED OUT
+
+    if (audio.paused) {
+      audio.currentTime = 0;
+      audio.play().then(() => {
+        toggleAudioBtn.textContent = "Pause audio";
+        toggleAudioBtn.setAttribute("aria-pressed", "true");
+        audioHint.textContent = "Audio playing — it will continue as you change images.";
+        audio.controls = true;
+      }).catch(err => {
+        console.warn("Audio play prevented or failed:", err);
+        audio.controls = true;
+        audioHint.textContent = "Playback blocked; press Play in the audio controls.";
+      });
+    } else {
+      audioHint.textContent = "Audio already playing — it will continue as you change images.";
+      audio.controls = true;
+    }
+    */
+  }
+
+  // Add click listeners to all thumbnails
+  const thumbnails = document.querySelectorAll(".gallery img");
+  thumbnails.forEach(thumbnail => {
+    thumbnail.addEventListener("click", openLightbox);
+  });
+
+  function updateLightboxImage() {
+    lightboxImage.src = `images/${imageList[currentImageIndex]}`;
+  }
+
+  function closeLightbox() {
+    lightbox.style.display = "none";
+
+    /*
+    AUDIO CLOSE BEHAVIOUR COMMENTED OUT
+
+    audioHint.textContent = audio.paused
+      ? "Audio paused."
+      : "Audio playing in background.";
+    */
+  }
+
+  function changeImage(direction) {
+    currentImageIndex += direction;
+
+    if (currentImageIndex < 0) {
+      currentImageIndex = imageList.length - 1;
+    } else if (currentImageIndex >= imageList.length) {
+      currentImageIndex = 0;
+    }
+
+    updateLightboxImage();
+
+    /*
+    AUDIO CONTINUE ON IMAGE CHANGE COMMENTED OUT
+
+    if (audio.paused) {
+      audio.play().then(() => {
+        toggleAudioBtn.textContent = "Pause audio";
+        toggleAudioBtn.setAttribute("aria-pressed", "true");
+        audioHint.textContent = "Audio playing — it will continue as you change images.";
+      }).catch(err => {
+        console.warn("Audio play on change failed:", err);
+        audio.controls = true;
+        audioHint.textContent = "Tap Play on the audio controls to listen.";
+      });
+    }
+    */
+  }
+
+  // Close when clicking the backdrop or close button
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox || e.target === closeBtn) {
+      closeLightbox();
+    }
+  });
+
+  // Keyboard navigation: Esc to close, arrows to change
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.style.display === "flex") {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") changeImage(-1);
+      if (e.key === "ArrowRight") changeImage(1);
+    }
+  });
+
+  /*
+  AUDIO FILE CHECK COMMENTED OUT
+
+  (function checkAudioExists() {
+    fetch("audio/Lions.mp3", { method: "HEAD" }).then(res => {
+      if (!res.ok) {
+        console.warn("Audio file not reachable: status", res.status);
+        audioHint.textContent = "Audio file not reachable. Check audio/Lions.mp3 path.";
+      }
+    }).catch(err => {
+      console.warn("Audio HEAD check failed", err);
+    });
+  })();
+  */
+</script>
